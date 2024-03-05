@@ -1,0 +1,2 @@
+FLASK_APP=rollout.py
+ FLASK_DEBUG=1
