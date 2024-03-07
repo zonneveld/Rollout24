@@ -116,11 +116,15 @@ class TaskMaster():
             speed  = data[SPEED]
             if channel in self.channels:
                 self.move_serv_relative(channel,target,speed)
-
+        elif data[ACTION] == 'simple_trigger':
+            wrap = lambda : self.move_serv_absolute(0,0,0)
+            # threading.Thread(target=wrap,)
+            pass
         else:
             print("wrong json command")
             pass
     
+
     def move_serv_absolute(self,channel,target,speed):
         _min, _max = SERVO
         
@@ -130,6 +134,10 @@ class TaskMaster():
         self.channels[channel].target = target
         self.channels[channel].speed = speed
     
+    def move_serv_absolute_delayd(self,channel,target,speed,delay):
+        sleep(delay)
+        self.move_serv_absolute(channel,target,speed)
+
     def move_serv_relative(self,channel,target,speed):
         _min, _max = SERVO
         
