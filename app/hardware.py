@@ -51,6 +51,7 @@ class TaskMaster():
         def __init__(self):
             self.active = threading.Event()
             self.active.set()
+            
             self.interval = UPDATE_INTERFALL
             self.callback = lambda : None
             super().__init__()
@@ -71,6 +72,7 @@ class TaskMaster():
 
     def __init__(self):
         self.ticker = TaskMaster.TaskTicker()
+        self.ticker.daemon = True
         self.ticker.callback = self.update_channels
         self.channels = {}
         self.channels['servo_1'] = Channel(0,SERVO)
@@ -78,6 +80,8 @@ class TaskMaster():
         
         # pass
 
+
+# bliep
     def update_channels(self):
         # print("update channels!")
         for channel_handles in self.channels:
