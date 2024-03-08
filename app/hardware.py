@@ -27,7 +27,7 @@ else:
     def write_to_channel(index,value,scale_range):
         _min,_max = scale_range
         scale = int(map_range(value,_min,_max,0,0xffff))
-        pca[index].duty_cycle = scale
+        pca.channels[index].duty_cycle = scale
     # pca.channels[0].duty_cycle = 0x7FFF
 
 
