@@ -2,6 +2,7 @@
 # from threading import Thread
 import threading
 from time import sleep
+from app.hardware_defines import *
 
 verbose = True
 
@@ -35,11 +36,6 @@ else:
 
 
 
-TARGET = "target"
-ACTION = "action"
-VALUE = "value"
-SPEED = "speed"
-CHANNEL= "channel"
 
 SERVO = (0,180)
 MOTOR = (0.0,1.0)
@@ -92,33 +88,41 @@ class TaskMaster():
         # self.ticker.interval = 0.1
         self.ticker.start()
 
-
     def stop(self):
         self.ticker.stop()
 
-    def add_task(self, data):
-        print(data)
+    # todoo add json checkers functions?
 
-        # if data[TARGET] == "servo_1":
-        #     index = 1
-        #     value = data[VALUE]
-        #     speed = data[SPEED]
-        #     self.action_servo_absolute(index,value,speed)
-        if data[ACTION] == 'move_servo_absolute':
+    def add_task(self, data):
+        # print(data)
+        if data[ACTION] == ACTION_MOVE_SERVO_ABSOLUTE:
             channel = data[CHANNEL]
             target = data[TARGET]
             speed  = data[SPEED]
             if channel in self.channels:
                 self.move_serv_absolute(channel,target,speed)
-        elif data[ACTION] == 'move_servo_relative':
+        elif data[ACTION] ==  ACTION_MOVE_SERVO_RELATIVE:
             channel = data[CHANNEL]
             target = data[TARGET]
             speed  = data[SPEED]
             if channel in self.channels:
                 self.move_serv_relative(channel,target,speed)
-        elif data[ACTION] == 'simple_trigger':
-            wrap = lambda : self.move_serv_absolute(0,0,0)
+        elif data[ACTION] == ACTION_TRIGGER:
+            channel = data[CHANNEL]
+            start = data[TARGET_START]
+            end = data [TARGET_END]
+            speed  = data[SPEED]
+            delay = data[TRIGGER_DELAY]
+            if channel in self.channels:
+                self.move_serv_absolute(channel,start,speed)
+                wrap = lambda : self.move_serv_absolute_delay(channel,end,speed,delay)
+                t = threading.Thread(target=wrap)
+                t.daemon = True
+                t.start()
             # threading.Thread(target=wrap,)
+            # t = Thread(target=myfunc, args=(i,))
+            # t.start()
+            
             pass
         else:
             print("wrong json command")
@@ -134,7 +138,7 @@ class TaskMaster():
         self.channels[channel].target = target
         self.channels[channel].speed = speed
     
-    def move_serv_absolute_delayd(self,channel,target,speed,delay):
+    def move_serv_absolute_delay(self,channel,target,speed,delay):
         sleep(delay)
         self.move_serv_absolute(channel,target,speed)
 
